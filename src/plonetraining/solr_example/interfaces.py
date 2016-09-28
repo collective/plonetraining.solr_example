@@ -14,11 +14,11 @@ class IPlonetrainingSolrExampleLayer(IDefaultBrowserLayer):
 class ITask(Interface):
 
     title = schema.TextLine(
-        title=_(u"Title"),
+        title=_(u'Title'),
         required=True,
     )
 
     description = schema.Text(
-        title=_(u"Description"),
+        title=_(u'Description'),
         required=False,
     )
