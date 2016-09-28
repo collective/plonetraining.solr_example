@@ -1,0 +1,29 @@
+<html lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+  <metal:content-core fill-slot="content-core">
+    <input type="text" list="searchresults" id="acsearch" placeholder="Search site ..." />
+    <datalist id="searchresults" />
+
+    <script>
+	$(document).ready(function() {
+		$("#acsearch").on("input", function(e) {
+			var val = $(this).val();
+			if(val.length < 2) return;
+			$.get("solr-autocomplete", {term:val}, function(res) {
+				var dataList = $("#searchresults");
+				dataList.empty();
+				if(res.length) {
+					for(var i=0, len=res.length; i<len; i++) {
+						var opt = $("<option></option>").attr("value", res[i].label);
+						dataList.append(opt);
+					}
+				}
+			},"json");
+		});
+	})
+    </script>	
+  </metal:content-core>
+</body>
+</html>

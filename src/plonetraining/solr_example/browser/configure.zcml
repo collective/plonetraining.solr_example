@@ -17,4 +17,11 @@
       directory="static"
       />
 
+  <browser:page
+      name="training-autocomplete"
+      for="*"
+      permission="zope2.View"
+      template="solr-autocomplete.pt"
+      />
+  
 </configure>
