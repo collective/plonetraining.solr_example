@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-from plone.app.testing import TEST_USER_ID
-from zope.component import queryUtility
-from zope.component import createObject
-from plone.app.testing import setRoles
-from plone.dexterity.interfaces import IDexterityFTI
 from plone import api
-
-from plonetraining.solr_example.testing import PLONETRAINING_SOLR_EXAMPLE_INTEGRATION_TESTING  # noqa
+from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID
+from plone.dexterity.interfaces import IDexterityFTI
 from plonetraining.solr_example.interfaces import ITask
+from plonetraining.solr_example.testing import PLONETRAINING_SOLR_EXAMPLE_INTEGRATION_TESTING  # noqa
+from zope.component import createObject
+from zope.component import queryUtility
 
 import unittest2 as unittest
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Setup tests for this package."""
-from plonetraining.solr_example.testing import PLONETRAINING_SOLR_EXAMPLE_INTEGRATION_TESTING  # noqa
 from plone import api
+from plonetraining.solr_example.testing import PLONETRAINING_SOLR_EXAMPLE_INTEGRATION_TESTING  # noqa
 
 import unittest
 
@@ -26,7 +26,8 @@ class TestSetup(unittest.TestCase):
         from plonetraining.solr_example.interfaces import (
             IPlonetrainingSolrExampleLayer)
         from plone.browserlayer import utils
-        self.assertIn(IPlonetrainingSolrExampleLayer, utils.registered_layers())
+        self.assertIn(IPlonetrainingSolrExampleLayer,
+                      utils.registered_layers())
 
 
 class TestUninstall(unittest.TestCase):
@@ -45,6 +46,7 @@ class TestUninstall(unittest.TestCase):
 
     def test_browserlayer_removed(self):
         """Test that IPlonetrainingSolrExampleLayer is removed."""
-        from plonetraining.solr_example.interfaces import IPlonetrainingSolrExampleLayer
+        from plonetraining.solr_example.interfaces import IPlonetrainingSolrExampleLayer  # noqa
         from plone.browserlayer import utils
-        self.assertNotIn(IPlonetrainingSolrExampleLayer, utils.registered_layers())
+        self.assertNotIn(IPlonetrainingSolrExampleLayer,
+                         utils.registered_layers())
