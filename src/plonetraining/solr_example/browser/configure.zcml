@@ -24,4 +24,11 @@
       template="solr-autocomplete.pt"
       />
   
+  <browser:page
+      name="training-suggest"
+      for="*"
+      permission="zope2.View"
+      template="solr-suggest.pt"
+      />
+
 </configure>
