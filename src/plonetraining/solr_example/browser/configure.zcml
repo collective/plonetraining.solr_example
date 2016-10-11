@@ -21,14 +21,21 @@
       name="training-autocomplete"
       for="*"
       permission="zope2.View"
-      template="solr-autocomplete.pt"
+      template="training-autocomplete.pt"
       />
-  
+
   <browser:page
       name="training-suggest"
       for="*"
       permission="zope2.View"
-      template="solr-suggest.pt"
+      template="training-suggest.pt"
+      />
+
+  <browser:page
+      name="training-fancysearch"
+      for="*"
+      permission="zope2.View"
+      template="training-suggest.pt"
       />
 
 </configure>

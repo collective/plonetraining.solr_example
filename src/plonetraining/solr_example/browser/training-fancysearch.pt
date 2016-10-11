@@ -1,0 +1,57 @@
+<html lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+  <metal:content-core fill-slot="content-core">
+    <input type="text" list="searchresults" id="acsearch" placeholder="Search site ..." />
+    <datalist id="searchresults" />
+
+    <div id="search-filter">
+      <fieldset class="noborder">
+        <legend>Item type</legend>
+        <div class="field">
+          <div class="optionsToggle">
+            <input name="pt_toggle" value="#" id="pt_toggle" class="noborder" type="checkbox" />
+            <label for="pt_toggle">Select All/None</label>
+          </div>
+          <div class="search-type-options">
+            <div>
+              <input name="portal_type" class="noborder" id="query-portaltype-Collection" value="Collection" type="checkbox" />
+              <label for="">Collection</label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+      <fieldset class="noborder">
+        <legend>New items since</legend>
+        <div class="field">
+          <div class="search-date-options">
+            <div>
+              <input id="query-date-yesterday" name="created" type="radio" /> <label for="query-date-yesterday">Yesterday</label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+
+    <script>
+	$(document).ready(function() {
+		$("#acsearch").on("input", function(e) {
+			var val = $(this).val();
+			if(val.length < 2) return;
+			$.get("solr-autocomplete", {term:val}, function(res) {
+				var dataList = $("#searchresults");
+				dataList.empty();
+				if(res.length) {
+					for(var i=0, len=res.length; i<len; i++) {
+						var opt = $("<option></option>").attr("value", res[i].label);
+						dataList.append(opt);
+					}
+				}
+			},"json");
+		});
+	})
+    </script>
+  </metal:content-core>
+</body>
+</html>
