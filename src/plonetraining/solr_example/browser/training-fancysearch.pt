@@ -16,9 +16,8 @@
     <metal:block fill-slot="top_slot"
                  tal:define="dummy python:request.set('disable_border',1);
                              disable_column_one python:request.set('disable_plone.leftcolumn',1);
-                             disable_column_two python:request.set('disable_plone.rightcolumn',1);" />
+                             disable_column_two python:request.set('disable_plone.rightcolumn',0);" />
     <metal:block fill-slot="column_one_slot" />
-    <metal:block fill-slot="column_two_slot" />
 
     <metal:js fill-slot="javascript_head_slot">
       <script type="text/javascript" src=""
@@ -92,9 +91,7 @@
         <p><strong i18n:translate="description_no_results_found">No results were found.</strong></p>
     </div>
 
-    <div tal:define="view nocall: context/@@search-facets | nothing"
-         tal:condition="python: view"
-         tal:replace="structure python: view(results=results)" />
+
 
     <div tal:condition="results" id="content-core"
          tal:define="desc_length python:100;
@@ -187,5 +184,11 @@
     </div>
 
 </div>
+<div metal:fill-slot="portlets_two_slot">
+    <div tal:define="facet_view nocall: context/@@search-facets;
+                     results view/search;"
+         tal:replace="structure python:facet_view(results=results._sequence)" />
+</div>
 </body>
+
 </html>
