@@ -32,14 +32,15 @@
 
 <body>
 <div metal:fill-slot="main"
-     tal:define="
+     tal:define="use_view_action python:['Image, File'];
                  results view/search;
                  searchterm request/SearchableText|nothing;
                  ">
 
     <form name="searchform"
           action="search"
-          class="searchPage">
+          class="searchPage"
+          tal:attributes="action request/getURL">
         <input class="searchPage"
                name="SearchableText"
                type="text"
@@ -71,20 +72,23 @@
         tal:content="python:len(results)">234</span> items matching your search terms</span>
     </h1>
 
-    <p class="discreet"
-       tal:define="syndication context/@@tools/syndication|context/portal_syndication"
-       tal:condition="syndication/isSiteSyndicationAllowed"
-       tal:on-error="string:">
-        <a href=""
-           class="link-feed"
-           i18n:translate="title_rss_feed"
-           tal:define="here_url context/@@plone_context_state/object_url;"
-           tal:attributes="href string:$here_url/search_rss?${request/QUERY_STRING}">
-             Subscribe to an always-updated feed of these search terms</a>
+    <p id="rss-subscription" i18n:domain="plone"
+               tal:define="syndication context/@@tools/syndication|nothing"
+               tal:condition="syndication/isSiteSyndicationAllowed|nothing">
+               <img src="" alt="RSS"
+                    tal:attributes="src string:${portal_url}/rss.gif"/>
+                <a href=""
+                   class="link-feed"
+                   tal:define="here_url context/@@plone_context_state/object_url"
+                   tal:attributes="href string:$here_url/search_rss?${request/QUERY_STRING}">
+                    <span i18n:translate="title_subscribe_rss_feed">
+                      Subscribe to an always-updated RSS feed.
+                    </span>
+                </a>
     </p>
 
 
-    <div tal:condition="not: results">
+    <div tal:condition="not: view/has_results">
         <p><strong i18n:translate="description_no_results_found">No results were found.</strong></p>
     </div>
 
@@ -93,16 +97,17 @@
          tal:replace="structure python: view(results=results)" />
 
     <div tal:condition="results" id="content-core"
-         tal:define="
+         tal:define="desc_length python:100;
+                     desc_ellipsis string:...;
                      normalizeString nocall:context/@@plone/normalizeString;
                      toLocalizedTime nocall:context/@@plone/toLocalizedTime;">
 
         <dl class="searchResults">
-        <tal:results repeat="result batch">
+        <tal:results repeat="result results">
         <tal:entry define="result_url result/getURL;
                            result_type result/portal_type;
                            item_icon python:plone_view.getIcon(result);
-                           url python:'%s?searchterm=%s'%(test(result_type in use_view_action, result_url+'/view', result_url+'/'), searchterm);">
+                           url python:'%s?searchterm=%s' % (result_type in use_view_action and result_url+'/view' or result_url+'/', searchterm);">
             <dt tal:define="item_wf_state_class string:state-${result/review_state};"
                 tal:attributes="class python:'contenttype-' + normalizeString(result.portal_type)">
               <img tal:replace="structure item_icon/html_tag" />
