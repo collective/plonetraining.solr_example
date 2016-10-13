@@ -1,6 +1,8 @@
-from Products.Five import BrowserView
-from plone.batching import Batch
+# -*- coding: utf-8 -*-
 from plone import api
+from plone.batching import Batch
+from Products.Five import BrowserView
+
 
 class FancySearchView(BrowserView):
 
@@ -16,4 +18,3 @@ class FancySearchView(BrowserView):
         b_start = self.request.get('b_start', 0)
         batch = Batch(results, size=20, start=b_start)
         return batch
-

@@ -58,7 +58,7 @@
              tal:replace="structure view/hiddenfields" />
 
     </form>
-  
+
     <h1 class="documentFirstHeading">
         <span i18n:translate="heading_search_results">
             Search results
