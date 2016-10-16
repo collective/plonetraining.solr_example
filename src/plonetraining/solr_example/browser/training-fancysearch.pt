@@ -10,8 +10,25 @@
     <script type="text/javascript" src=""
             tal:attributes="src string:${portal_url}/++resource++collective.showmore.js">
     </script>
-    <script type="text/javascript" src=""
-            tal:attributes="src string:${portal_url}/++resource++collective.solr.resources/scripts.js">
+         <script type="text/javascript">
+
+	$(document).ready(function() {
+		$("#acsearch").on("input", function(e) {
+			var val = $(this).val();
+			if(val.length < 2) return;
+			$.get("solr-autocomplete", {term:val}, function(res) {
+				var dataList = $("#searchresults");
+				dataList.empty();
+				if(res.length) {
+					for(var i=0, len=res.length; i<len; i++) {
+						var opt = $("<option></option>").attr("value", res[i].label);
+						dataList.append(opt);
+					}
+				}
+			},"json");
+		});
+	})
+
     </script>
   </metal:js>
 </head>
@@ -25,11 +42,15 @@
         tal:attributes="action request/getURL">
     <input class="searchPage"
            name="SearchableText"
+           id="acsearch"
            type="text"
            size="25"
+           list="searchresults"
            title="Search Site"
+           placeholder="Search Site ..."
            tal:attributes="value request/SearchableText|nothing;"
     />
+    <datalist id="searchresults" />
     <input class="searchPage searchButton"
            type="submit"
            value="Search"/>
@@ -83,10 +104,12 @@
     </dl>
     <div metal:use-macro="here/batch_macros/macros/navigation"/>
   </div>
+
 </div>
 <div metal:fill-slot="portlets_two_slot">
   <div tal:define="facet_view nocall: context/@@search-facets;
                      results view/search;"
+       tal:condition="view/has_results"
        tal:replace="structure python:facet_view(results=results._sequence._basesequence)"/>
 </div>
 </body>
