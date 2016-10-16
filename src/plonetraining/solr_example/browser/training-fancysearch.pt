@@ -1,194 +1,93 @@
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
-      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      lang="en"
-      metal:use-macro="here/main_template/macros/master"
-      i18n:domain="plone">
+<html metal:use-macro="here/main_template/macros/master">
 <head>
-    <metal:block metal:fill-slot="head_slot">
-        <link rel="alternate" title="RSS 1.0" type="application/rss+xml"
-              tal:define="here_url context/@@plone_context_state/object_url;"
-              tal:condition="request/SearchableText|nothing"
-              tal:attributes="href string:$here_url/search_rss?${request/QUERY_STRING}"/>
-    </metal:block>
-
-    <metal:block fill-slot="top_slot"
-                 tal:define="dummy python:request.set('disable_border',1);
+  <metal:block fill-slot="top_slot"
+               tal:define="dummy python:request.set('disable_border',1);
                              disable_column_one python:request.set('disable_plone.leftcolumn',1);
-                             disable_column_two python:request.set('disable_plone.rightcolumn',0);" />
-    <metal:block fill-slot="column_one_slot" />
+                             enable_column_two python:request.set('disable_plone.rightcolumn',0);"/>
+  <metal:block fill-slot="column_one_slot"/>
 
-    <metal:js fill-slot="javascript_head_slot">
-      <script type="text/javascript" src=""
-              tal:attributes="src string:${portal_url}/++resource++collective.showmore.js">
-      </script>
-      <script type="text/javascript" src=""
-              tal:attributes="src string:${portal_url}/++resource++collective.solr.resources/scripts.js">
-      </script>
-    </metal:js>
+  <metal:js fill-slot="javascript_head_slot">
+    <script type="text/javascript" src=""
+            tal:attributes="src string:${portal_url}/++resource++collective.showmore.js">
+    </script>
+    <script type="text/javascript" src=""
+            tal:attributes="src string:${portal_url}/++resource++collective.solr.resources/scripts.js">
+    </script>
+  </metal:js>
 </head>
 
 <body>
 <div metal:fill-slot="main"
-     tal:define="use_view_action python:['Image, File'];
-                 results view/search;
-                 searchterm request/SearchableText|nothing;
-                 ">
-
-    <form name="searchform"
-          action="search"
-          class="searchPage"
-          tal:attributes="action request/getURL">
-        <input class="searchPage"
-               name="SearchableText"
-               type="text"
-               size="25"
-               title="Search Site"
-               i18n:attributes="title title_search_title;"
-               tal:attributes="value request/SearchableText|nothing;"
-               />
-        <input class="searchPage searchButton"
-               type="submit"
-               value="Search"
-               i18n:attributes="value label_search;"/>
-
-        <div tal:define="view nocall: context/@@search-facets | nothing"
-             tal:condition="python: view"
-             tal:replace="structure view/hiddenfields" />
-
-    </form>
-
-    <h1 class="documentFirstHeading">
-        <span i18n:translate="heading_search_results">
-            Search results
-        </span>
-        <span class="discreet">
+     tal:define="results view/search">
+  <form name="searchform"
+        action="search"
+        class="searchPage"
+        tal:attributes="action request/getURL">
+    <input class="searchPage"
+           name="SearchableText"
+           type="text"
+           size="25"
+           title="Search Site"
+           tal:attributes="value request/SearchableText|nothing;"
+    />
+    <input class="searchPage searchButton"
+           type="submit"
+           value="Search"/>
+    <div tal:define="view nocall: context/@@search-facets | nothing"
+         tal:condition="python: view"
+         tal:replace="structure view/hiddenfields"/>
+  </form>
+  <h1 class="documentFirstHeading">
+    Search results
+    <span class="discreet">
         &mdash;
-        <span i18n:translate="batch_x_items_matching_your_criteria"
-        ><span i18n:name="number"
-        tal:omit-tag=""
-        tal:content="python:len(results)">234</span> items matching your search terms</span>
-    </h1>
+      <span tal:content="python:len(results)">234</span> items matching your search terms
+        </span>
+  </h1>
 
-    <p id="rss-subscription" i18n:domain="plone"
-               tal:define="syndication context/@@tools/syndication|nothing"
-               tal:condition="syndication/isSiteSyndicationAllowed|nothing">
-               <img src="" alt="RSS"
-                    tal:attributes="src string:${portal_url}/rss.gif"/>
-                <a href=""
-                   class="link-feed"
-                   tal:define="here_url context/@@plone_context_state/object_url"
-                   tal:attributes="href string:$here_url/search_rss?${request/QUERY_STRING}">
-                    <span i18n:translate="title_subscribe_rss_feed">
-                      Subscribe to an always-updated RSS feed.
-                    </span>
-                </a>
+  <div tal:condition="not: view/has_results">
+    <p tal:define="suggest view/suggest">
+      <tal:noresuls>No results were found.</tal:noresuls>
+      <tal:suggest condition="suggest">Did you mean:
+        <strong>
+          <a href="" tal:attributes="href suggest/url"
+             tal:content="suggest/word">Plone</a>
+        </strong>
+      </tal:suggest>
     </p>
-
-
-    <div tal:condition="not: view/has_results">
-        <p><strong i18n:translate="description_no_results_found">No results were found.</strong></p>
-    </div>
-
-
-
-    <div tal:condition="results" id="content-core"
-         tal:define="desc_length python:100;
-                     desc_ellipsis string:...;
-                     normalizeString nocall:context/@@plone/normalizeString;
-                     toLocalizedTime nocall:context/@@plone/toLocalizedTime;">
-
-        <dl class="searchResults">
-        <tal:results repeat="result results">
-        <tal:entry define="result_url result/getURL;
-                           result_type result/portal_type;
-                           item_icon python:plone_view.getIcon(result);
-                           url python:'%s?searchterm=%s' % (result_type in use_view_action and result_url+'/view' or result_url+'/', searchterm);">
-            <dt tal:define="item_wf_state_class string:state-${result/review_state};"
-                tal:attributes="class python:'contenttype-' + normalizeString(result.portal_type)">
-              <img tal:replace="structure item_icon/html_tag" />
-               <a
-                 href="#"
-                 tal:attributes="href url;
-                                 class string:$item_wf_state_class"
-                 tal:content="result/pretty_title_or_id" />
-            </dt>
-
-            <dd>
-                <span tal:replace="python:plone_view.cropText(result.Description, desc_length, desc_ellipsis)">
-                    Cropped description
-                </span>
-
-            <span class="documentByLine"
-                  tal:define="isAnon context/@@plone_portal_state/anonymous;"
-                  tal:condition="python:not isAnon or site_properties.allowAnonymousViewAbout">
-                <span class="documentAuthor"
-                    i18n:translate="label_by_author">
-                by
-                <a href="#"
-                   tal:attributes="href string:${portal_url}/author/${result/Creator}"
-                   tal:content="result/Creator"
-                   tal:omit-tag="not:result/Creator"
-                   i18n:name="author">
-                Bob Dobalina
-                </a>
-
-                </span>
-
-                <span class="documentModified">
-                  &mdash;
-                    <span i18n:translate="box_last_modified">
-                    last modified
-                    </span>
-                    <span tal:replace="python:toLocalizedTime(result.ModificationDate, long_format=1)">
-                    August 16, 2001 at 23:35:59
-                    </span>
-                </span>
-
-                <span tal:define="categories result/Subject|nothing"
-                      tal:condition="categories">
-                    &mdash;
-                    <tal:filedunder i18n:translate="label_filed_under">filed under:</tal:filedunder>
-                        <span tal:repeat="category categories">
-                            <a href=""
-                               class="link-category"
-                               rel="tag"
-                               tal:content="category"
-                               tal:attributes="href string:${portal_url}/search?Subject%3Alist=${category}">
-                               Category
-                            </a><tal:separator condition="not: repeat/category/end">,</tal:separator>
-                        </span>
-                </span>
-
-            </span>
-
-            <br />
-
-            <tal:highlighting condition="python:hasattr(results,'highlighting')">
-                <span class ="highlighting" tal:condition="python:result['UID'] in results.highlighting" tal:repeat="snippets python:results.highlighting[result['UID']].values()">
+  </div>
+  <div tal:condition="results" id="content-core"
+       tal:define="normalizeString nocall:context/@@plone/normalizeString;">
+    <dl class="searchResults">
+      <tal:results repeat="result results">
+        <dt tal:attributes="class result/ContentTypeClass">
+          <a href="#"
+             tal:attributes="href result/getURL;
+                                 class string:state-${result/review_state}"
+             tal:content="result/Title"/>
+        </dt>
+        <dd>
+          <span tal:replace="result/CroppedDescription">Cropped description</span>
+          <br/>
+          <tal:highlighting condition="python:hasattr(results,'highlighting')">
+                <span class="highlighting" tal:condition="python:result['UID'] in results.highlighting"
+                      tal:repeat="snippets python:results.highlighting[result['UID']].values()">
                     ...&nbsp;
                     <tal:snippets repeat="snippet snippets">
                         <tal:snippet content="structure snippet">highlighted snippet</tal:snippet> ...
                     </tal:snippets>
                 </span>
-            </tal:highlighting>
-            </dd>
-
-        </tal:entry>
-        </tal:results>
-        </dl>
-
-        <div metal:use-macro="here/batch_macros/macros/navigation" />
-
-    </div>
-
+          </tal:highlighting>
+        </dd>
+      </tal:results>
+    </dl>
+    <div metal:use-macro="here/batch_macros/macros/navigation"/>
+  </div>
 </div>
 <div metal:fill-slot="portlets_two_slot">
-    <div tal:define="facet_view nocall: context/@@search-facets;
+  <div tal:define="facet_view nocall: context/@@search-facets;
                      results view/search;"
-         tal:replace="structure python:facet_view(results=results._sequence)" />
+       tal:replace="structure python:facet_view(results=results._sequence._basesequence)"/>
 </div>
 </body>
-
 </html>
