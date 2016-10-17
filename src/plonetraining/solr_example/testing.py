@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from plone.app.contenttypes.testing import PLONE_APP_CONTENTTYPES_FIXTURE
+from collective.solr.testing import COLLECTIVE_SOLR_FIXTURE
 from plone.app.robotframework.testing import REMOTE_LIBRARY_BUNDLE_FIXTURE
 from plone.app.testing import applyProfile
 from plone.app.testing import FunctionalTesting
@@ -12,7 +12,7 @@ import plonetraining.solr_example
 
 class PlonetrainingSolrExampleLayer(PloneSandboxLayer):
 
-    defaultBases = (PLONE_APP_CONTENTTYPES_FIXTURE,)
+    defaultBases = (COLLECTIVE_SOLR_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):
         # Load any other ZCML that is required for your tests.
@@ -34,7 +34,7 @@ PLONETRAINING_SOLR_EXAMPLE_INTEGRATION_TESTING = IntegrationTesting(
 
 
 PLONETRAINING_SOLR_EXAMPLE_FUNCTIONAL_TESTING = FunctionalTesting(
-    bases=(PLONETRAINING_SOLR_EXAMPLE_FIXTURE,),
+    bases=(PLONETRAINING_SOLR_EXAMPLE_FIXTURE, ),
     name='PlonetrainingSolrExampleLayer:FunctionalTesting'
 )
 

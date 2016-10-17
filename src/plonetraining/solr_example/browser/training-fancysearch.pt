@@ -2,32 +2,33 @@
 <head>
   <metal:block fill-slot="top_slot"
                tal:define="dummy python:request.set('disable_border',1);
-                             disable_column_one python:request.set('disable_plone.leftcolumn',1);
-                             enable_column_two python:request.set('disable_plone.rightcolumn',0);"/>
+                   disable_column_one python:request.set('disable_plone.leftcolumn',1);
+                   enable_column_two python:request.set('disable_plone.rightcolumn',0);"/>
   <metal:block fill-slot="column_one_slot"/>
 
   <metal:js fill-slot="javascript_head_slot">
     <script type="text/javascript" src=""
             tal:attributes="src string:${portal_url}/++resource++collective.showmore.js">
     </script>
-         <script type="text/javascript">
+    <script type="text/javascript">
 
-	$(document).ready(function() {
-		$("#acsearch").on("input", function(e) {
-			var val = $(this).val();
-			if(val.length < 2) return;
-			$.get("solr-autocomplete", {term:val}, function(res) {
-				var dataList = $("#searchresults");
-				dataList.empty();
-				if(res.length) {
-					for(var i=0, len=res.length; i<len; i++) {
-						var opt = $("<option></option>").attr("value", res[i].label);
-						dataList.append(opt);
-					}
-				}
-			},"json");
-		});
-	})
+  $(document).ready(function() {
+    $("#acsearch").on("input", function(e) {
+      var val = $(this).val();
+      if(val.length < 2) return;
+      $.get("solr-autocomplete", {term:val}, function(res) {
+        var dataList = $("#searchresults");
+        dataList.empty();
+        if(res.length) {
+          for(var i=0, len=res.length; i<len; i++) {
+            var opt = $("<option></option>").attr("value", res[i].label);
+            dataList.append(opt);
+          }
+        }
+      },"json");
+    });
+  })
+
 
     </script>
   </metal:js>
@@ -40,20 +41,12 @@
         action="search"
         class="searchPage"
         tal:attributes="action request/getURL">
-    <input class="searchPage"
-           name="SearchableText"
-           id="acsearch"
-           type="text"
-           size="25"
-           list="searchresults"
-           title="Search Site"
+    <input class="searchPage" name="SearchableText" id="acsearch" type="search"
+           size="25" list="searchresults" title="Search Site"
            placeholder="Search Site ..."
-           tal:attributes="value request/SearchableText|nothing;"
-    />
-    <datalist id="searchresults" />
-    <input class="searchPage searchButton"
-           type="submit"
-           value="Search"/>
+           tal:attributes="value request/SearchableText|nothing;"/>
+    <datalist id="searchresults"/>
+    <input class="searchPage searchButton" type="submit" value="Search"/>
     <div tal:define="view nocall: context/@@search-facets | nothing"
          tal:condition="python: view"
          tal:replace="structure view/hiddenfields"/>
@@ -62,8 +55,9 @@
     Search results
     <span class="discreet">
         &mdash;
-      <span tal:content="python:len(results)">234</span> items matching your search terms
-        </span>
+      <span tal:content="python:len(results)">234</span>
+      items matching your search terms
+    </span>
   </h1>
 
   <div tal:condition="not: view/has_results">
@@ -77,28 +71,18 @@
       </tal:suggest>
     </p>
   </div>
-  <div tal:condition="results" id="content-core"
-       tal:define="normalizeString nocall:context/@@plone/normalizeString;">
+  <div tal:condition="results" id="content-core">
     <dl class="searchResults">
       <tal:results repeat="result results">
         <dt tal:attributes="class result/ContentTypeClass">
           <a href="#"
              tal:attributes="href result/getURL;
-                                 class string:state-${result/review_state}"
+                             class string:state-${result/review_state}"
              tal:content="result/Title"/>
         </dt>
         <dd>
           <span tal:replace="result/CroppedDescription">Cropped description</span>
-          <br/>
-          <tal:highlighting condition="python:hasattr(results,'highlighting')">
-                <span class="highlighting" tal:condition="python:result['UID'] in results.highlighting"
-                      tal:repeat="snippets python:results.highlighting[result['UID']].values()">
-                    ...&nbsp;
-                    <tal:snippets repeat="snippet snippets">
-                        <tal:snippet content="structure snippet">highlighted snippet</tal:snippet> ...
-                    </tal:snippets>
-                </span>
-          </tal:highlighting>
+          
         </dd>
       </tal:results>
     </dl>
