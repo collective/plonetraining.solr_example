@@ -27,7 +27,7 @@
 
   <!-- Schema, class and security -->
   <property name="add_permission">cmf.AddPortalContent</property>
-  <property name="klass">plone.dexterity.content.Item</property>
+  <property name="klass">plonetraining.solr_example.content.Task</property>
   <property name="model_file">plonetraining.solr_example.schema:Task.xml</property>
   <property name="model_source"></property>
   <property name="schema"></property>
