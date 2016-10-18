@@ -7,7 +7,7 @@
   <includeDependencies package="." />
 
   <include package=".browser" />
-  <adapter factory=".indexer.fullname_indexer" name="fullname" />
+  <!-- adapter factory=".indexer.fullname_indexer" name="fullname" / -->
 
   <genericsetup:registerProfile
       name="default"
